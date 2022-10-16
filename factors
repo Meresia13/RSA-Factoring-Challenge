@@ -1,38 +1,29 @@
-#!/bin/bash
+#!/usr/bin/python3
+"""factorize given set of numbers in a file to product of two small numbers"""
+from sys import argv
 
-# split a number >> 64-bit
-handle_big () {
-	num=$1
-	len=$2
-	factors=($(factor $num))
-        x=${factors[1]}
 
-	if [ $len -gt 36 ]; then
-		i=$(((len/15) + (len%15)))
-		next=0
-		sum=0
-		for j in $(seq 1 $i); do
-			val=${num:$(((j*18) - 18)):$((j*18))}
-			[[ $next -gt 0 ]] && val="$next$val"
-			[[ $sum -eq 0 ]] && sum="$((val/x))"
-			[[ $sum -ne 0 ]] && sum="$sum$((val/x))"
-			next=$((val%x))
-		done
-		printf "$num=$sum*$x\n"	
-		return
-	fi
-	first=${num:0:$((len/2))}
-	second=${num:$((len/2)):$(((len/2)+(len%2)))}
-	rem="$((first%x))$second"
-	printf "$num=$((first/x))$((rem/x))*$x\n"
-}
+def factorize(number_to_check):   
+    """"find two small numbers that multiply to give a given number"""
+    i = 2
 
-# handle factoring
-while read line; do
-	if [ ${#line} -gt 18 ]; then
-		handle_big $line ${#line}
-		continue
-	fi
-	factors=($(factor $line))
-	echo -e "${line}=$((line/factors[1]))*${factors[1]}"
-done < $1
+    if number_to_check < 2:
+        return
+
+    while number_to_check % i:
+        i += 1
+    print("{:.0f}={:.0f}*{:.0f}".format(number_to_check, number_to_check / i, i))
+
+if len(argv) != 2:
+    exit()
+
+try:
+    with open(argv[1]) as file:
+        line = file.readline()
+
+        while line != "":
+            number_to_check = int(line.split('\n')[0])
+            factorize(number_to_check)
+            line = file.readline()
+except:
+    pass
